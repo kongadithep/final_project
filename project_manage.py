@@ -90,12 +90,23 @@ with open(os.path.join(__location__, 'persons.csv')) as f:
     rows = csv.DictReader(f)
     for r in rows:
         person2.append(dict(r))
+project2 = []
+with open(os.path.join(__location__, 'Project.csv')) as f:
+    rows = csv.DictReader(f)
+    for r in rows:
+        project2.append(dict(r))
+advisor = []
+with open(os.path.join(__location__, 'Project.csv')) as f:
+    rows = csv.DictReader(f)
+    for r in rows:
+        advisor.append(dict(r))
 
 table1 = Table('login', login)
 table2 = Table('approve', approve)
 table3 = Table('name', person2)
 student = Table("student", Project)
-
+member_table = Table("member", project2)
+advisor1 = Table("advisor",advisor)
 
 # based on the return value for login, activate the code that performs activities according to the role defined for that person_id
 
@@ -103,17 +114,215 @@ student = Table("student", Project)
 # see and do admin related activities
 
 class Admin:
-    # def __init__(self,id,project,request,approve,):
-    # elif val[1] = 'student':
-    # see and do student related activities
-    pass
+
+    def admin_input_pending_data(self):
+        project_id = input("Project ID: ")
+        name = input("Project Name: ")
+        group1 = input("What you Group?: ")
+        name2 = input("Member1: ")
+        name3 = input("Member2: ")
+        name4 = input("Advisor: ")
+        Lead = input("Lead:")
+        Status = input("Approve only: ")
 
 
+        # สร้าง dictionary จากข้อมูลที่รับมา
+        input_data = {
+            "ProjectID": project_id,
+            "Project": name,
+            "Group": group1,
+            "Lead": Lead,
+            "Member1": name2,
+            "Member2": name3,
+            "Advisor": name4,
+            "Status": Status
+
+
+            # เพิ่มค่าอื่นๆ ที่ต้องการรับอินพุต
+        }
+
+        # เรียกใช้เมทอดที่ต้องการในต่อไป
+        self.update_pending_data(input_data)
+
+    def update_pending_data(self, input_data):
+        csv_file_path = 'Project.csv'
+
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+
+        input_data.setdefault('Status', '-')
+
+        # Append the new data to existing_data
+        existing_data.append(input_data)
+
+        with open(csv_file_path, mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+        __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+    def update_student_approve(self, target_Group, new_role):
+        with open('Member_pending_request.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row['ProjectID'] == target_Group:
+                row['Response'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Member_pending_request.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "to_be_member", "Response", "Response_date"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_student_date(self, target_Group, new_role):
+        with open('Member_pending_request.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row['ProjectID'] == target_Group:
+                row['Response_date'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Member_pending_request.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "to_be_member", "Response", "Response_date"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_advisor_approve(self, target_Group, new_role):
+        with open('Member_pending_request.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row['ProjectID'] == target_Group:
+                row['Response'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Advisor_pending_request.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "to_be_member", "Response", "Response_date"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_advisor_date(self, target_Group, new_role):
+        with open('Advisor_pending_request.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row['ProjectID'] == target_Group:
+                row['Response_date'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Member_pending_request.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "to_be_member", "Response", "Response_date"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def delete_by_id(self, target_id):
+        with open("Project.csv", mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # กรองข้อมูลเพื่อลบแถวที่มี ID เท่ากับ target_id
+        updated_data = [row for row in existing_data if row['ProjectID'] != target_id]
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open("Project.csv", mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID","Project","Group","Lead","Member1","Member2","Advisor","Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(updated_data)
+    def update_Project_name(self, target_id, new_projectid,new_Project,new_Group,new_lead,member1,member2,Advisor,status):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["ProjectID"] == target_id:
+                row['ProjectID'] = new_projectid
+                row['Project'] = new_Project
+                row['Group'] = new_Group
+                row['Lead'] = new_lead
+                row['Member1'] = member1
+                row['Member2'] = member2
+                row['Advisor'] = Advisor
+                row['Status'] = status
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+    def student_exists(self, student_name):
+        with open("login.csv", mode='r') as file:
+            reader = csv.reader(file)
+
+            return any(student_name == row[1] for row in reader)
 class Student():
     def addproject(self, project):
         self.projectid = []
         self.projectid.append(project)
-        # table1.update_row('Film', 'A Serious Man', 'Year', '2022')
+
 
     def input_pending_data(self, id):
 
@@ -137,11 +346,11 @@ class Student():
             # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
             existing_data = list(reader)
 
-        # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+
         input_data.setdefault('Response', 'no-status')
         input_data.setdefault('Response_date', '-')
 
-        # Append the new data to existing_data
+
         existing_data.append(input_data)
 
         with open(csv_file_path, mode='w', newline='') as csv_file:
@@ -270,15 +479,115 @@ fieldnames = ["ProjectID", 'Project', "Lead", "Member1", "Member2", "Advisor", '
 
 
 class Member:
-    pass
+    def check_member(self, id, group):
+        cc = member_table.filter(lambda x: x['ProjectID'] == id and x['Group'] == group)
+        return cc
 
+    def update_Project_name(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Lead"] == target_id:
+                row['Project'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_Project_status(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Group"] == target_id:
+                row['Status'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_student_deny(self, target_Group, new_role):
+        with open('Member_pending_request.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row['to_be_member'] == target_Group:
+                row['Response'] = new_role
+    def update_Project_member1(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["ProjectID"] == target_id:
+                row['Member1'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+    def update_Project_member2(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["ProjectID"] == target_id:
+                row['Member1'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
 
 # elif val[1] = 'lead':
 # see and do lead related activities
 class lead:
-    def view_project_status(self, project_id):
-        # Implement logic to view project status based on project_id
-        pass
 
     def update_student_deny(self, target_ID, new_status):
         with open('Project.csv', mode='r') as csv_file:
@@ -313,7 +622,7 @@ class lead:
             # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
             existing_data = list(reader)
 
-            # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+
         new_project_data.setdefault('Status', 'no-status')
 
     def input_pending_data(self, namelead):
@@ -325,12 +634,7 @@ class lead:
         name3 = input("Member2: ")
         name4 = input("Advisor: ")
 
-        # แปลงวันที่จากสตริงเป็นวัตถุ datetime
-        # try:
-        #     date_obj = datetime.strptime(date_str, "%d/%m/%y")
-        # except ValueError:
-        #     print("รูปแบบวันที่ไม่ถูกต้อง")
-        #     return
+
 
         # สร้าง dictionary จากข้อมูลที่รับมา
         input_data = {
@@ -358,10 +662,10 @@ class lead:
             # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
             existing_data = list(reader)
 
-        # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+
         input_data.setdefault('Status', '-')
 
-        # Append the new data to existing_data
+
         existing_data.append(input_data)
 
         with open(csv_file_path, mode='w', newline='') as csv_file:
@@ -389,7 +693,7 @@ class lead:
         return rejected_projects
 
     def view_responses_advisor(self, group):
-        # Implement logic to view responses for a specific project
+
         csv_file_path = 'Advisor_pending_request.csv'
         with open(csv_file_path, mode='r') as csv_file:
             reader = csv.DictReader(csv_file)
@@ -557,11 +861,11 @@ class lead:
             # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
             existing_data = list(reader)
 
-        # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+
         input_data.setdefault('Response', f'Pending From Lead {group}')
         input_data.setdefault('Response_date', '-')
 
-        # Append the new data to existing_data
+
         existing_data.append(input_data)
 
         with open(csv_file_path, mode='w', newline='') as csv_file:
@@ -599,11 +903,11 @@ class lead:
             # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
             existing_data = list(reader)
 
-        # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+
         input_data.setdefault('Response', f'Pending From Lead {group}')
         input_data.setdefault('Response_date', '-')
 
-        # Append the new data to existing_data
+
         existing_data.append(input_data)
 
         with open(csv_file_path, mode='w', newline='') as csv_file:
@@ -620,18 +924,12 @@ class lead:
             os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 
-# elif val[1] = 'faculty':
-# see and do faculty related activities
+
 class faculty:
     def input_pending_data(self):
         project_id = input("ID: ")
         print("example if you want to join Group 5 You input Group5")
         date_str = input("to be advisor Group?: ")
-
-        # แปลงวันที่จากสตริงเป็นวัตถุ datetime
-        # try:
-        #     date_obj = datetime.strptime(date_str, "%d/%m/%y")
-        # except ValueError:
 
         # สร้าง dictionary จากข้อมูลที่รับมา
         input_data = {
@@ -652,11 +950,11 @@ class faculty:
             # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
             existing_data = list(reader)
 
-        # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+
         input_data.setdefault('Response', 'no-status')
         input_data.setdefault('Response_date', '-')
 
-        # Append the new data to existing_data
+
         existing_data.append(input_data)
 
         with open(csv_file_path, mode='w', newline='') as csv_file:
@@ -752,13 +1050,344 @@ class faculty:
             writer.writerows(existing_data)
 
 
-# elif val[1] = 'advisor':
-# see and do advisor related activities
+
 class advisor:
-    pass
+    def update_student_adivisor(self, target_ID, new_status):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Group"] == target_ID:
+                row['Advisor'] = new_status
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_project_table(self, new_project_data):
+
+        csv_file_path = 'Project.csv'
+
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
 
 
-# once everyhthing is done, make a call to the exit function
+        new_project_data.setdefault('Status', 'no-status')
+
+    def input_pending_data(self, namelead):
+
+        project_id = input("Project ID: ")
+        name = input("Project Name: ")
+        group1 = input("What you Group?: ")
+        name2 = input("Member1: ")
+        name3 = input("Member2: ")
+        name4 = input("Advisor: ")
+
+
+
+        # สร้าง dictionary จากข้อมูลที่รับมา
+        input_data = {
+            "ProjectID": project_id,
+            "Project": name,
+            "Group": group1,
+            "Lead": namelead,
+            "Member1": name2,
+            "Member2": name3,
+            "Advisor": name4,
+
+            # "Lead" :
+            # เพิ่มค่าอื่นๆ ที่ต้องการรับอินพุต
+        }
+
+        # เรียกใช้เมทอดที่ต้องการในต่อไป
+        self.update_pending_data(input_data)
+
+    def update_pending_data(self, input_data):
+        csv_file_path = 'Project.csv'
+
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # Ensure 'to_be_member' is set to 'reject' if not specified in the new data
+        input_data.setdefault('Status', '-')
+
+        # Append the new data to existing_data
+        existing_data.append(input_data)
+
+        with open(csv_file_path, mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+        __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+    def view_responses_member(self, group):
+
+        csv_file_path = 'Member_pending_request.csv'
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+        rejected_projects = [row for row in existing_data if row["to_be_member"] == group]
+        return rejected_projects
+
+    def view_responses_advisor(self, group):
+
+        csv_file_path = 'Advisor_pending_request.csv'
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+        rejected_projects = [row for row in existing_data if row["to_be_advisor"] == group]
+        return rejected_projects
+
+    def delete_by_id(self, target_id):
+        with open("Project.csv", mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # กรองข้อมูลเพื่อลบแถวที่มี ID เท่ากับ target_id
+        updated_data = [row for row in existing_data if row['Lead'] != target_id]
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(updated_data)
+
+    def update_member1(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row['Lead'] == target_id:
+                row["ProjectID"] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_member2(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Lead"] == target_id:
+                row['Member2'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_Advisor(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Lead"] == target_id:
+                row['Advisor'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_Project_name(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Lead"] == target_id:
+                row['Project'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def update_Project_status(self, target_id, new_role):
+        with open('Project.csv', mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+        # วนลูปใน existing_data เพื่ออัปเดต role เมื่อพบ ID ที่ตรงกับ target_id
+        for row in existing_data:
+            if row["Lead"] == target_id:
+                row['Status'] = new_role
+
+        # เขียนข้อมูลทั้งหมดลงใน CSV ไฟล์
+        with open('Project.csv', mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "Project", 'Group', "Lead", "Member1", "Member2", "Advisor", "Status"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+    def member_input_pending_data(self, id):
+        name = input("Pending student id: ")
+        date_str = input("to be a member Group?: ")
+
+        input_data = {
+            "ProjectID": name,
+            "to_be_member": date_str
+            # เพิ่มค่าอื่นๆ ที่ต้องการรับอินพุต
+        }
+
+        # เรียกใช้เมทอดที่ต้องการในต่อไป
+        self.update_member_pending_data(input_data, date_str)
+
+    def update_member_pending_data(self, input_data, group):
+        csv_file_path = 'Member_pending_request.csv'
+
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+
+        input_data.setdefault('Response', f'Pending From Lead {group}')
+        input_data.setdefault('Response_date', '-')
+
+
+        existing_data.append(input_data)
+
+        with open(csv_file_path, mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "to_be_member", "Response", "Response_date"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+        __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+    def advisor_input_pending_data(self, id):
+        name = input("Pending faculty id: ")
+        date_str = input("to be member Group?: ")
+
+        input_data = {
+            "ProjectID": id,
+            "to_be_member": date_str
+            # เพิ่มค่าอื่นๆ ที่ต้องการรับอินพุต
+        }
+
+        # เรียกใช้เมทอดที่ต้องการในต่อไป
+        self.advisor_update_pending_data(input_data, date_str)
+
+    def advisor_update_pending_data(self, input_data, group):
+        csv_file_path = 'Advisor_pending_request.csv'
+
+        with open(csv_file_path, mode='r') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            # สร้าง list ของ dictionary จากข้อมูลที่มีใน CSV ไฟล์
+            existing_data = list(reader)
+
+
+        input_data.setdefault('Response', f'Pending From Lead {group}')
+        input_data.setdefault('Response_date', '-')
+
+
+        existing_data.append(input_data)
+
+        with open(csv_file_path, mode='w', newline='') as csv_file:
+            fieldnames = ["ProjectID", "to_be_member", "Response", "Response_date"]
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # เขียน header
+            writer.writeheader()
+
+            # เขียนข้อมูลในแต่ละแถว
+            writer.writerows(existing_data)
+
+        __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+
+
 movie = []
 with open(os.path.join(__location__, 'Member_pending_request.csv')) as f:
     rows = csv.DictReader(f)
@@ -770,8 +1399,6 @@ if val and len(val) == 3:
     user_id, user_role, user_name = val
     print(user_role)
     if user_role == 'admin':
-        # Admin activities
-        # print(f"Login")
         while True:
             print("Performing admin activities.")
             print("1.Admin can Create Project or Can update all the tables there")
@@ -779,29 +1406,74 @@ if val and len(val) == 3:
             print("3.See all project")
             print("4.Delete Project")
             print("5.Quit")
-            x = input("What you choice: ")
-            if x == 1:
-                pass
-            elif x == 2:
+            admin = Admin()
+            isa = int(input("What you choice: "))
+            if isa == 1:
+                print(project2)
+                s = int(input("1.Create Project / 2.update project: "))
+                if s == 1:
+                    admin.admin_input_pending_data()
+                elif s == 2:
+                    print(project2)
+                    ID = input("ProjectID: ")
+                    name_Project = input("Nameproject: ")
+                    Lead = input("New lead: ")
+                    if admin.student_exists(Lead):
+                        print(f"{Lead} add in Project.")
+                    else:
+                        print("Can't find name.")
+                    Group = input("New Group: ")
+                    Member1 = input("New member1: ")
+                    if admin.student_exists(Member1):
+                        print(f"{Member1} add in Project.")
+                    else:
+                        print("Can't find name.")
+                    Member2 = input("New member2: ")
+                    if admin.student_exists(Member2):
+                        print(f"{Member2} add in Project.")
+                    else:
+                        print("Can't find name.")
+                    Advisor = input("New Advisor: ")
+                    if admin.student_exists(Advisor):
+                        print(f"{Advisor} add in Project.")
+                    else:
+                        print("Can't find name.")
+                    Status = input("New Status: ")
+                    admin.update_Project_name(ID,name_Project,Lead,Group,Member1,Member2,Advisor,Status)
+
+
+            elif isa == 2:
                 print("1.Approve or Deny Student?: ")
                 print("2.Approve or Deny faculty?: ")
-                ap = int(input("What you choice "))
-                pass
-            elif x == 3:
-                pass
-            elif x == 4:
-                pass
-            elif x == 5:
+                ap = int(input("What you choice: "))
+
+                if ap == 1:
+                    print(approve)
+                    student_id = input("student ID:")
+                    Respond = input("Accept/deny: ")
+                    Respond_date = input("Respond date: ")
+                    admin.update_student_approve(student_id,Respond)
+                    admin.update_student_date(student_id,Respond_date)
+                if ap ==2:
+                    print(advisor)
+                    faculty = input("faculty ID")
+                    Respond_f = input("Accept/deny")
+                    Respond_date_f = input("Respond date")
+                    admin.update_advisor_approve(faculty,Respond_f)
+                    admin.update_student_date(faculty,Respond_date_f)
+
+            elif isa == 3:
+                print(project2)
+            elif isa == 4:
+                print(project2)
+                delete = input("Project ID: ")
+                admin.delete_by_id(delete)
+
+            elif isa == 5:
                 break
 
 
-    # ProjectID
-    # Title
-    # Lead
-    # Member1
-    # Member2
-    # Advisor
-    # Status
+
 
     elif user_role == 'student':
         # Student activities
@@ -856,48 +1528,6 @@ if val and len(val) == 3:
             elif select == 4:
                 break
 
-            # "ProjectID", "to_be_member", "Response", "Response_date"
-
-        # ID_project = input("ID Project: ")
-        # print("1.Lead: ")
-        # print("2.Member: ")
-        # lead_or_member = input("What you choice: ")
-        # if lead_or_member == 1:
-        #     pass
-        # elif lead_or_member == 2:
-        #     pass
-        # else:
-        #     print("We have 2 choice 1 or 2 :")
-        # student = Student()
-        # id = input("Project ID: ")
-        # title = input("Title Project: ")
-        #
-        # Lead = input("Lead name: ")
-        # # if student.student_exists(Lead):
-        # #     print(f"{Lead} add in Project.")
-        # # else:
-        # #     print("Can't find name.")
-        # Member1 = input("Member1 name: ")
-        # # if student.student_exists(Lead):
-        # #     print(f"{Member1} add in Project.")
-        # # else:
-        # #     print("Can't find name.")
-        # Member2 = input("Member2 name: ")
-        # # if student.student_exists(Lead):
-        # #     print(f"{Member2} add in Project.")
-        # # else:
-        # #     print("Can't find name.")
-        # Advisor = input("Advisor name: ")
-        # # if student.student_exists(Lead):
-        # #     print(f"{Advisor} add in Project.")
-        # # else:
-        # #     print("Can't find name.")
-        # status = input("Status: ")
-        # new_data = {"ProjectID":id,'Project': title,"Lead":Lead,"Member1":Member1,"Member2":Member2,"Advisor":Advisor, 'Status': status}
-        #
-        # student.update(new_data)
-
-        # Lionel.M 2977
 
     elif user_role == 'faculty':
         print("Performing faculty activities.")
@@ -913,19 +1543,18 @@ if val and len(val) == 3:
             advd = faculty()
             list_member = []
             if select == 1:
-                x = input("Input ID: ")
-                projects = advd.check_approve_advisor(x)
+                projects = advd.check_approve_advisor(user_id)
                 if projects:
                     for project in projects:
                         print(project)
                         respond = list(project.values())[2]
-                        # list_member.append(respond)
+
                         if respond == "Approve":
                             print("Status Approve.")
-                            print("You can choose to be a leader or a member.")
 
                             y = input("Input role: ")
                             advd.update_role(user_id, y)
+                            advd.update_role2(user_id, y)
 
                         elif respond == "Reject":
                             print("Project not Approve Please Add new Project.")
@@ -984,7 +1613,7 @@ if val and len(val) == 3:
 
                     print(table)
 
-                    # user_data.table[0]['ID']
+
                     lead1.input_pending_data(user_name)
                 elif modify_ == 2:
                     lead1.delete_by_id(user_name)
@@ -998,6 +1627,7 @@ if val and len(val) == 3:
                         lead1.update_Project_name(user_name, new_nameProject)
                     elif modi == 2:
                         new_status_project = input("Status Project: ")
+                        lead1.update_Project_status(user_name, new_status_project)
                     elif modi == 3:
                         break
                     else:
@@ -1007,7 +1637,7 @@ if val and len(val) == 3:
             elif inputchoice == 3:
 
                 print("Please Add potential members ")
-                # group = input("what you group: ")
+
                 names_member = table3.filter(lambda x: x["type"] == "student")
                 print(names_member)
                 lead1.member_input_pending_data(user_id)
@@ -1024,21 +1654,19 @@ if val and len(val) == 3:
         while True:
             print("Welcome Advisor!!!!!!!")
             print("You can")
-            print("1.See project status you group ")
-            print("2.See and modify project information")
-            print("3.Send out requests to potential members")
-            print("4.Send out requests to a potential advisor")
-            print("5.Quit")
+            print("1.See project status you group")
+            print("2,update advisor")
+            print("3.Quit")
+
             inputchoice1 = int(input("What you choice: "))
+            ad = advisor()
             if inputchoice1 == 1:
-                pass
-            elif inputchoice1 == 2:
-                pass
+                status = member_table.filter(lambda x: x["Advisor"] == user_name)
+                print(status)
+            elif inputchoice1 ==2:
+                group = input("What you Group request: ")
+                ad.update_student_adivisor(group,user_name)
             elif inputchoice1 == 3:
-                pass
-            elif inputchoice1 == 4:
-                pass
-            elif inputchoice1 == 5:
                 break
     elif user_role == "member":
         while True:
@@ -1047,27 +1675,56 @@ if val and len(val) == 3:
             print("1.See project status you group ")
             print("2.See and modify project information")
             print("3.See who has responded to the requests sent out")
-            print("4.quit")
+            print("4.Pleas Add you name If you select 1 and don't have you name ")
+            print("5.quit")
             inputchoice2 = int(input("What you choice: "))
+            c_member = Member()
             if inputchoice2 == 1:
-                pass
+                project_id = input("Project ID: ")
+                group_member = input("Group Member: ")
+                addname = advisor1.filter(lambda x:x["Group"] == group_member)
+                print(addname)
+                print("if you don't have a name in your group Please Member1 or Member2 in Choice 4")
+                cc = c_member.check_member(project_id, group_member)
+                print(cc)
+
             elif inputchoice2 == 2:
-                pass
+                print("1.modify Project name")
+                print("2.update Project")
+                print("3.Quit")
+                modi = int(input("what number you choice: "))
+                if modi == 1:
+                    new_nameProject = input("New Projectname: ")
+                    c_member.update_Project_name(user_name, new_nameProject)
+                elif modi == 2:
+                    new_status_project = input("Status Project: ")
+                    group = input("Group: ")
+                    c_member.update_Project_status(group, new_status_project)
+                elif modi == 3:
+                    break
             elif inputchoice2 == 3:
-                pass
+                x = int(input("1.accept or 2.deny?: "))
+                if x == 1:
+                    group = input("Group?: ")
+                    ky = f"waiting to join{group}"
+                    kz = table2.filter(lambda x: x["Response"] == ky)
+                    print(kz)
+                if x == 2:
+                    group = input("Group?: ")
+                    ku = f"deny to join Group{group}"
+                    kz = table2.filter(lambda x: x["Response"] == ku)
+                    print(kz)
             elif inputchoice2 == 4:
+                name = int(input("1.Name1 / 2.Name2 "))
+                if name == 1:
+                    project_ID = input("project_ID: ")
+                    c_member.update_Project_member1(project_ID,user_name)
+                if name == 2:
+                    project_ID2 = input("Group: ")
+                    c_member.update_Project_member2(project_ID2,user_name)
+            elif inputchoice2 == 5:
                 break
 
-# table3 = Table('movies',movie )
-# my_table_3_survive_m = table3.filter(lambda x:x["Status"] == "On hold")
-# print(my_table_3_survive_m.table)
-# print("average value of ‘Worldwide Gross",my_table_3_survive_m.aggregate(lambda x: sum(x)/len(x),'Worldwide Gross'))
 
-# sdroject = []
-# with open(os.path.join(__location__,'Project.csv')) as f:
-#     rows = csv.DictReader(f)
-#     for r in rows:
-#         sdroject.append(dict(r))
-# print(sdroject)
 
 exit()
